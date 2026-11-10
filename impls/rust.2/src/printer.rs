@@ -56,6 +56,9 @@ pub fn pr_str(atom: &Atom, print_readably: bool) -> String {
         Atom::Metadata { data, metadata } => {
             format!("(with-meta {} {})", pr_str(data, print_readably), pr_str(metadata, print_readably))
         }
+        Atom::Nil => "nil".to_string(),
+        Atom::True => "true".to_string(),
+        Atom::False => "false".to_string(),
         Atom::Comment => "".to_string(),
     }
 }

@@ -3,7 +3,7 @@ use regex::Regex;
 use std::hash::Hash;
 use thiserror::Error;
 
-#[derive(PartialEq, Eq, Hash, Clone)]
+#[derive(PartialEq, Eq, Hash, Clone, Debug)]
 pub enum Atom {
     List(Vec<Atom>),
     Vector(Vec<Atom>),
@@ -22,6 +22,9 @@ pub enum Atom {
         metadata: Box<Atom>
     },
     Comment,
+    Nil,
+    True,
+    False,
 }
 
 #[derive(Copy, Clone)]
@@ -189,13 +192,16 @@ fn read_atom(reader: Reader) -> Result<(Atom, Reader), ReaderError> {
         Err(ExpectedToken)?
     };
 
-    let starts_with_integer = Regex::new(r"^\d")?;
+    let integer_test = Regex::new(r"^-?\d")?;
 
     let atom = match token {
         _ if token.starts_with(";") => { return Ok((Atom::Comment, Reader::empty())) }
         _ if token.starts_with("\"") => parse_string(token)?,
-        _ if starts_with_integer.is_match(token) => Atom::Integer(token.parse::<i64>()?),
+        _ if integer_test.is_match(token) => Atom::Integer(token.parse::<i64>()?),
         _ if token.starts_with(":") => Atom::Keyword(token[1..].to_string()),
+        _ if token.to_lowercase() == "nil" => Atom::Nil,
+        _ if token.to_lowercase() == "true" => Atom::True,
+        _ if token.to_lowercase() == "false" => Atom::False,
         _ => Atom::Symbol(token.to_string())
     };
 
