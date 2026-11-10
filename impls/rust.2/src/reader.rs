@@ -9,6 +9,7 @@ pub enum Atom {
     Vector(Vec<Atom>),
     Integer(i64),
     Symbol(String),
+    Keyword(String),
     HashMap(Vec<(Atom, Atom)>),
     String(String),
     Quote(Box<Atom>),
@@ -194,6 +195,7 @@ fn read_atom(reader: Reader) -> Result<(Atom, Reader), ReaderError> {
         _ if token.starts_with(";") => { return Ok((Atom::Comment, Reader::empty())) }
         _ if token.starts_with("\"") => parse_string(token)?,
         _ if starts_with_integer.is_match(token) => Atom::Integer(token.parse::<i64>()?),
+        _ if token.starts_with(":") => Atom::Keyword(token[1..].to_string()),
         _ => Atom::Symbol(token.to_string())
     };
 

@@ -8,6 +8,7 @@ fn list_items(atoms: &Vec<Atom>, print_readably: bool) -> String {
 pub fn pr_str(atom: &Atom, print_readably: bool) -> String {
     match atom {
         Atom::Symbol(symbol) => symbol.to_string(),
+        Atom::Keyword(keyword) => format!(":{}", keyword),
         Atom::Integer(integer) => format!("{}", integer),
         Atom::List(atoms) => {
             format!("({})", list_items(atoms, print_readably))
